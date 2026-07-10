@@ -1,0 +1,229 @@
+/* Game board — holes & moles */
+.board {
+  position: relative;
+  width: 100%;
+  max-width: var(--board-max);
+  margin-inline: auto;
+  z-index: var(--z-board);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: crosshair;
+}
+
+.board__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(var(--space-3), 3vw, var(--space-5));
+}
+
+.hole {
+  position: relative;
+  aspect-ratio: var(--hole-aspect);
+  overflow: hidden;
+  cursor: crosshair;
+  background:
+    linear-gradient(var(--color-ink), var(--color-ink)) top / 100% var(--border-thin) no-repeat,
+    linear-gradient(var(--color-ink), var(--color-ink)) bottom / 100% var(--border-thin) no-repeat,
+    linear-gradient(var(--color-ink), var(--color-ink)) left / var(--border-thin) 100% no-repeat,
+    linear-gradient(var(--color-ink), var(--color-ink)) right / var(--border-thin) 100% no-repeat,
+    repeating-linear-gradient(
+      -45deg,
+      var(--color-paper-dim) 0 3px,
+      transparent 3px 6px
+    ),
+    var(--color-paper-dim);
+}
+
+/*
+  On hit: open only the TOP so the hammer can sit above the head.
+  Keep left/right/bottom clipped — side bleed was the corner scraps.
+*/
+.hole.is-hit {
+  z-index: 2;
+  overflow: visible;
+  clip-path: inset(-28% 0 0 0);
+}
+
+/*
+  Well fills the hole — do NOT raise bottom edge.
+  Raising bottom + overflow:hidden was clipping mole paws.
+*/
+/*
+  Well must stack ABOVE grass. Mole z-index only works inside this
+  stacking context — if grass shares z-index with the well and comes
+  later in DOM, black grass blades cover the paws.
+  Keep overflow:hidden always — never unclip on hit (that spilled grass).
+*/
+.hole__well {
+  position: absolute;
+  inset: var(--border-thin);
+  overflow: hidden;
+  z-index: 2;
+}
+
+/*
+  Grass = ground dressing behind the mole.
+  Transparent pixels don't cover; opaque black blades do if layered above.
+*/
+.hole__grass {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1024 / 391;
+  object-fit: cover;
+  object-position: center bottom;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  z-index: 1;
+  max-height: 32%;
+}
+
+.mole {
+  position: absolute;
+  left: 50%;
+  bottom: 8%;
+  width: var(--mole-width);
+  transform: translateX(-50%) translateY(110%);
+  transition: transform var(--duration-slow) var(--ease-snap);
+  will-change: transform;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.mole__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 800 / 640;
+  object-fit: contain;
+  object-position: center bottom;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  -ms-interpolation-mode: nearest-neighbor;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.mole__img--hit {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  opacity: 0;
+  transition: opacity 60ms steps(1, end);
+}
+
+.mole__img--idle {
+  position: relative;
+  opacity: 1;
+  transition: opacity 60ms steps(1, end);
+}
+
+/* Full mole (incl. paws) visible above grass */
+.hole.is-up .mole {
+  transform: translateX(-50%) translateY(0);
+  transition-timing-function: var(--ease-pop);
+}
+
+.hole.is-hit .mole__img--idle {
+  opacity: 0;
+}
+
+.hole.is-hit .mole__img--hit {
+  opacity: 1;
+}
+
+.hole.is-hit:not(.is-up) .mole {
+  transform: translateX(-50%) translateY(110%) rotate(-4deg) scale(0.94);
+  transition-duration: var(--duration-base);
+  transition-timing-function: var(--ease-snap);
+}
+
+.hole.is-hit.is-up .mole {
+  transform: translateX(-50%) translateY(-4%) scale(1.05);
+  transition-duration: var(--duration-fast);
+}
+
+/*
+  Hit FX on the hole — sits on the mole crown, not floating above.
+*/
+.fx-burst {
+  position: absolute;
+  left: 54%;
+  top: 14%;
+  width: 20%;
+  aspect-ratio: 1;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: none;
+  box-shadow: none;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 6;
+  transform: translate(-50%, -40%) rotate(-36deg);
+}
+
+.fx-burst__hammer {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.hole.is-hit .fx-burst {
+  animation: hammer-tap 240ms var(--ease-out) forwards;
+}
+
+@keyframes hammer-tap {
+  0% {
+    opacity: 0;
+    transform: translate(-30%, -90%) rotate(-52deg) scale(0.9);
+  }
+  32% {
+    opacity: 1;
+    transform: translate(-50%, -40%) rotate(-16deg) scale(1);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-50%, -34%) rotate(-10deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-52%, -22%) rotate(-4deg) scale(0.95);
+  }
+}
+
+.board.is-paused {
+  pointer-events: none;
+  opacity: 0.55;
+  filter: grayscale(1);
+  cursor: default;
+}
+
+@media (max-width: 380px) {
+  .board__grid {
+    gap: var(--space-2);
+  }
+
+  :root {
+    --mole-width: 96%;
+  }
+
+  .hole__grass {
+    max-height: 36%;
+  }
+}

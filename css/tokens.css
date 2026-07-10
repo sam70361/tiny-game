@@ -1,0 +1,70 @@
+/* Design tokens */
+:root {
+  /* Color — high-contrast ink / paper */
+  --color-ink: #0a0a0a;
+  --color-paper: #f5f5f0;
+  --color-paper-dim: #e8e8e0;
+  --color-ink-muted: #3a3a3a;
+  --color-hit: #0a0a0a;
+  --color-miss: #0a0a0a;
+  --color-surface: #f5f5f0;
+  --color-overlay: rgba(10, 10, 10, 0.72);
+  --color-focus: #0a0a0a;
+
+  /* Fonts — local pixel face (Cubic 11) + system fallbacks */
+  --font-display: "Cubic 11", "Courier New", "PingFang SC", "Microsoft YaHei", monospace;
+  --font-ui: "Cubic 11", "Cascadia Mono", "PingFang SC", "Microsoft YaHei", monospace;
+  --font-body: "Cubic 11", "PingFang SC", "Microsoft YaHei", monospace;
+
+  /* Type scale — multiples of 11px for Cubic 11 pixel grid */
+  --text-xs: 0.6875rem;   /* 11px */
+  --text-sm: 0.6875rem;   /* 11px */
+  --text-base: 1.375rem;  /* 22px */
+  --text-lg: 1.375rem;    /* 22px */
+  --text-xl: 2.0625rem;   /* 33px */
+  --text-2xl: 2.0625rem;  /* 33px */
+  --text-3xl: 2.75rem;    /* 44px */
+  --text-4xl: 3.4375rem;  /* 55px */
+
+  /* Spacing — 4px base */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* Borders & radius — sharp geometry */
+  --border-width: 3px;
+  --border-thin: 2px;
+  --radius-none: 0;
+  --radius-sm: 2px;
+
+  /* Motion */
+  --ease-snap: cubic-bezier(0.2, 0.9, 0.3, 1);
+  --ease-pop: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 120ms;
+  --duration-base: 220ms;
+  --duration-slow: 380ms;
+
+  /* Layout */
+  --board-max: 600px;
+  --hole-aspect: 1 / 1.12;
+  --mole-width: 88%;
+  --content-max: 720px;
+
+  /* Z-index */
+  --z-board: 1;
+  --z-hud: 10;
+  --z-fx: 20;
+  --z-modal: 300;
+  --z-toast: 400;
+
+  /* Pixel grid for dither atmosphere */
+  --pixel: 4px;
+}

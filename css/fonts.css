@@ -1,0 +1,10 @@
+/* Local pixel fonts — Cubic 11 (俐方體11號, OFL) */
+@font-face {
+  font-family: "Cubic 11";
+  src:
+    url("../assets/fonts/Cubic_11.woff2") format("woff2"),
+    url("../assets/fonts/Cubic_11.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}

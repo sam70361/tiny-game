@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="锤锤地鼠 — 经典打地鼠小游戏，本地存档，五档难度" />
+    <meta name="theme-color" content="#f5f5f0" />
+    <title>锤锤地鼠</title>
+
+    <link rel="stylesheet" href="css/fonts.css" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/components/button.css" />
+    <link rel="stylesheet" href="css/components/hud.css" />
+    <link rel="stylesheet" href="css/components/board.css" />
+    <link rel="stylesheet" href="css/components/modal.css" />
+    <link rel="stylesheet" href="css/components/pause.css" />
+    <link rel="stylesheet" href="css/components/toast.css" />
+    <link rel="stylesheet" href="css/pages/game.css" />
+    <link rel="stylesheet" href="css/utilities.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="app__header">
+        <h1 class="app__brand" data-brand>锤锤地鼠</h1>
+        <p class="app__tagline" data-tagline>冒出来就锤 · 点中得分</p>
+      </header>
+
+      <main class="app__main">
+        <!-- Home -->
+        <section class="screen home is-active" data-screen="home" aria-label="开始">
+          <div class="home__preview" aria-hidden="true">
+            <div class="home__preview-frame">
+              <img
+                class="home__preview-img--idle"
+                data-mole-preview-idle
+                src="assets/images/mole-idle.png"
+                alt=""
+                width="800"
+                height="640"
+                decoding="async"
+              />
+              <img
+                class="home__preview-img--hit"
+                data-mole-preview-hit
+                src="assets/images/mole-hit.png"
+                alt=""
+                width="800"
+                height="640"
+                decoding="async"
+              />
+            </div>
+          </div>
+
+          <div class="diff" data-diff role="group" aria-label="难度"></div>
+
+          <div class="home__actions">
+            <button type="button" class="btn btn--solid btn--block" data-btn-start>开始游戏</button>
+          </div>
+
+          <div class="home__save" aria-live="polite">
+            <p class="home__best" data-best></p>
+            <p class="home__stats" data-stats></p>
+            <p class="home__save-hint" data-save-hint></p>
+            <button type="button" class="btn btn--ghost btn--tiny" data-btn-clear-save>清除存档</button>
+          </div>
+
+          <ul class="home__rules" data-rules></ul>
+        </section>
+
+        <!-- Play -->
+        <section class="screen" data-screen="play" aria-label="游戏中">
+          <div class="hud" role="status" aria-live="polite">
+            <div class="hud__cell">
+              <span class="hud__label" data-label-score>得分</span>
+              <span class="hud__value" data-hud-score>0</span>
+            </div>
+            <div class="hud__cell">
+              <span class="hud__label" data-label-time>剩余</span>
+              <span class="hud__value" data-hud-time>30</span>
+            </div>
+            <div class="hud__cell">
+              <span class="hud__label" data-label-lives>生命</span>
+              <span class="hud__value" data-hud-lives>3</span>
+            </div>
+          </div>
+
+          <div id="board" class="board" aria-label="游戏盘面"></div>
+
+          <div class="play__controls">
+            <button type="button" class="btn" data-btn-pause>暂停</button>
+            <button type="button" class="btn btn--ghost" data-btn-home>返回首页</button>
+          </div>
+          <p class="play__hint">空格键暂停 / 继续</p>
+        </section>
+      </main>
+
+      <footer class="app__footer">
+        <p>进度自动保存 · 刷新不丢</p>
+      </footer>
+    </div>
+
+    <!-- Result modal -->
+    <div
+      id="modal-result"
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-hidden="true"
+      aria-labelledby="modal-title"
+    >
+      <div class="modal__panel">
+        <h2 id="modal-title" class="modal__title" data-modal-title>时间到</h2>
+        <p class="modal__score" data-modal-score>0</p>
+        <p class="modal__meta" data-modal-meta></p>
+        <p class="modal__body" data-modal-body></p>
+        <div class="btn-group">
+          <button type="button" class="btn btn--solid" data-modal-action="restart">再来一局</button>
+          <button type="button" class="btn" data-modal-action="home">返回首页</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pause modal -->
+    <div
+      id="modal-pause"
+      class="modal modal--pause"
+      role="dialog"
+      aria-modal="true"
+      aria-hidden="true"
+      aria-labelledby="pause-title"
+    >
+      <div class="modal__panel">
+        <div class="pause-anim" aria-hidden="true">
+          <img
+            class="pause-anim__frame"
+            src="assets/images/pause-1.png"
+            alt=""
+            width="512"
+            height="512"
+            decoding="async"
+          />
+          <img
+            class="pause-anim__frame"
+            src="assets/images/pause-2.png"
+            alt=""
+            width="512"
+            height="512"
+            decoding="async"
+          />
+          <img
+            class="pause-anim__frame"
+            src="assets/images/pause-3.png"
+            alt=""
+            width="512"
+            height="512"
+            decoding="async"
+          />
+        </div>
+        <h2 id="pause-title" class="modal__title">暂停中</h2>
+        <p class="pause-hint">地鼠也在歇口气</p>
+        <div class="btn-group">
+          <button type="button" class="btn btn--solid" data-pause-action="resume">继续</button>
+          <button type="button" class="btn" data-pause-action="home">返回首页</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-host" class="toast-host" aria-live="polite"></div>
+
+    <script type="application/json" id="game-config">
+{
+  "title": "锤锤地鼠",
+  "tagline": "冒出来就锤 · 点中得分",
+  "moleIdle": "assets/images/mole-idle.png",
+  "moleHit": "assets/images/mole-hit.png",
+  "moleImage": "assets/images/mole-idle.png",
+  "holes": 9,
+  "defaultDifficulty": "normal",
+  "difficultyOrder": ["novice", "easy", "normal", "hard", "extreme"],
+  "difficulties": {
+    "novice": {
+      "label": "入门",
+      "rank": 1,
+      "duration": 50,
+      "lives": 5,
+      "minUp": 1100,
+      "maxUp": 1600,
+      "minGap": 620,
+      "maxGap": 1000,
+      "maxActive": 1,
+      "points": 10
+    },
+    "easy": {
+      "label": "轻松",
+      "rank": 2,
+      "duration": 40,
+      "lives": 4,
+      "minUp": 900,
+      "maxUp": 1300,
+      "minGap": 460,
+      "maxGap": 800,
+      "maxActive": 1,
+      "points": 12
+    },
+    "normal": {
+      "label": "标准",
+      "rank": 3,
+      "duration": 35,
+      "lives": 3,
+      "minUp": 900,
+      "maxUp": 1300,
+      "minGap": 450,
+      "maxGap": 780,
+      "maxActive": 1,
+      "points": 15
+    },
+    "hard": {
+      "label": "进阶",
+      "rank": 4,
+      "duration": 25,
+      "lives": 2,
+      "minUp": 520,
+      "maxUp": 820,
+      "minGap": 220,
+      "maxGap": 440,
+      "maxActive": 2,
+      "points": 20
+    },
+    "extreme": {
+      "label": "极速",
+      "rank": 5,
+      "duration": 20,
+      "lives": 1,
+      "minUp": 360,
+      "maxUp": 620,
+      "minGap": 140,
+      "maxGap": 300,
+      "maxActive": 3,
+      "points": 25
+    }
+  },
+  "labels": {
+    "score": "得分",
+    "time": "剩余",
+    "lives": "生命",
+    "start": "开始游戏",
+    "pause": "暂停",
+    "resume": "继续",
+    "paused": "暂停中",
+    "pauseHint": "地鼠也在歇口气",
+    "restart": "再来一局",
+    "home": "返回首页",
+    "gameOver": "时间到",
+    "noLives": "失误过多",
+    "hit": "命中",
+    "miss": "空击",
+    "best": "最高纪录",
+    "games": "对局",
+    "saveHint": "进度自动保存",
+    "rules": [
+      "地鼠冒出时点击击打",
+      "点空洞口会扣一次失误",
+      "时间结束或失误用尽即结束"
+    ]
+  }
+}
+    </script>
+
+    <script src="js/event-bus.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/components/toast.js"></script>
+    <script src="js/components/modal.js"></script>
+    <script src="js/components/board.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

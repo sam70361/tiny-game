@@ -1,0 +1,11 @@
+# Local zip packages
+*.zip
+
+# OS / editor
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+*.swp
+*~
